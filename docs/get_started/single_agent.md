@@ -125,7 +125,7 @@ You can connect the agent with external database (as long-term memory) in which 
 
         model_config=OpenSourceConfig(
             model_path='meta-llama/Llama-2-7b-chat-hf',  # a local folder or HuggingFace repo Name
-            server_url='http://localhost:8000/v1'))       # The url with the set port number
+            server_url='http://localhost:8000/v1'))      # The url with the set port number
 
     # Set the agent
     agent = ChatAgent(sys_msg, **agent_kwargs)

@@ -13,11 +13,11 @@ Some features require extra dependencies:
     ```
 - To enable RAG or use agent memory:
     ```bash
-    pip install camel-ai[tools]
+    pip install 'camel-ai[tools]'
     ```
 - To install with all dependencies:
     ```bash
-    pip install camel-ai[all]
+    pip install 'camel-ai[all]'
     ```
 
 ### Install from Source
@@ -64,7 +64,7 @@ cd camel
 pip install -e .
 
 # Or if you want to use all other extra packages
-pip install -e `.[all]` # (Optional)
+pip install -e '.[all]' # (Optional)
 ```
 
 ## API Setup
