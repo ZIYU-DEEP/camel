@@ -72,11 +72,11 @@ To install the base camel library, simply run `pip install camel-ai`
 
 Some features reuqire extra dependencies.
 
-To use hugging-face agent, run `pip install camel-ai[huggingface-agent]`
+To use hugging-face agent, run `pip install 'camel-ai[huggingface-agent]'`
 
-To enable RAG or use agent memory, run `pip install camel-ai[tools]`
+To enable RAG or use agent memory, run `pip install 'camel-ai[tools]''`
 
-To install with all dependencies, run `pip install camel-ai[all]`
+To install with all dependencies, run `pip install 'camel-ai[all]'`
 
 ### From Source
 
@@ -123,7 +123,7 @@ cd camel
 pip install -e .
 
 # Or if you want to use all other extra packages
-pip install -e .[all] # (Optional)
+pip install -e '.[all]' # (Optional)
 ```
 
 ## Documentation
@@ -176,7 +176,7 @@ Please note that the environment variable is session-specific. If you open a new
 
 ## Use Open-Source Models as Backends
 
-The basic workflow of using an open-sourced model as the backend is based on an external server running LLM inference service, e.g. during the development we chose [FastChat](https://github.com/lm-sys/FastChat) to run the service. 
+The basic workflow of using an open-sourced model as the backend is based on an external server running LLM inference service, e.g. during the development we chose [FastChat](https://github.com/lm-sys/FastChat) to run the service.
 
 We do not fix the choice of server to decouple the implementation of any specific LLM inference server with CAMEL (indicating the server needs to be deployed by the user himself). But the server to be deployed must satisfy that **it supports OpenAI-compatible APIs, especially the method `openai.ChatCompletion.create`**.
 
@@ -195,7 +195,7 @@ python3 -m fastchat.serve.model_worker --model-path meta-llama/Llama-2-7b-chat-h
 python3 -m fastchat.serve.openai_api_server --host localhost --port 8000
 ```
 
-2. After observing the controller successfully receiving the heart beat signal from the worker, the server should be ready for use at http://localhost:8000/v1. 
+2. After observing the controller successfully receiving the heart beat signal from the worker, the server should be ready for use at http://localhost:8000/v1.
 
 3. Then we can try on running `role_playing_with_open_source_model.py`, where each agent in this example is initialized with specifying the `model_path` and `server_url`, similar to the example code below:
 
