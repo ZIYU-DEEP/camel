@@ -16,10 +16,11 @@ Welcome to CAMEL's documentation!
    :caption: Get Started:
    :name: getting_started
 
+   get_started/setup.md
+   get_started/single_agent.md
    get_started/text_prompt.md
    get_started/code_prompt.md
    get_started/messages.md
-   get_started/single_agent.md
 
 .. toctree::
    :maxdepth: 1

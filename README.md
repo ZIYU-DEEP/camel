@@ -70,7 +70,7 @@ We provide a [![Google Colab](https://colab.research.google.com/assets/colab-bad
 
 To install the base camel library, simply run `pip install camel-ai`
 
-Some features reuqire extra dependencies.
+Some features require extra dependencies.
 
 To use hugging-face agent, run `pip install 'camel-ai[huggingface-agent]'`
 

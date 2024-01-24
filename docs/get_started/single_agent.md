@@ -1,4 +1,4 @@
-# Creating Your First Agent with the `ChatAgent` Class
+# Creating Your First Agent
 <!--
 In this tutorial, we will explore the `ChatAgent` class. The topics covered include:
 
@@ -85,12 +85,12 @@ agent.memory.get_context()
       {'role': 'user', 'content': 'dear, what is information in your mind?'}],
       30)
 ```
-So by default, we only store the user message. To update the memory:
+By default, we store only the user messages. You may update the agent's memory with any externally provided message in the format of `BaseMessage`; for example, using the agent's own response:
 ```python
-# Update the memory with any externally provided message in the format of `BaseMessage`
-# We here use the agent's own response as an example
+# Update the memory
 agent.record_message(response.msgs[0])
-
+```
+```python
 # Check the current memory
 agent.memory.get_context()
 >>> ([{'role': 'system', 'content': 'you are a helpful assistant.'},
@@ -102,9 +102,16 @@ agent.memory.get_context()
 
 
 ### Using Open-Source Models
-The high-level idea is to deploy a server with the local model in the backend and use it as a local drop-in replacement.
+(This section echos our instruction in the setup chapter. We put it here for completeness of the content.)
 
-1. Starting the server in the backend. We here use [FastChat](https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md) as an example.
+The high-level idea is to deploy a server with the local model in the backend and use it as a local drop-in replacement for the API. We here use [FastChat](https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md) as an example.
+
+0. Install the FastChat package with the following command, or see [here](https://github.com/lm-sys/FastChat/tree/main#install) for other options.
+    ```bash
+    pip3 install "fschat[model_worker,webui]"
+    ```
+
+1. Starting the FastChat server in the backend.
     ```python
     # Launch the fastchat controller
     python -m fastchat.serve.controller
