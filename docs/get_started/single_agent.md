@@ -7,9 +7,17 @@ In this tutorial, we will explore the `ChatAgent` class. The topics covered incl
 3.
 4.  -->
 
-## Introduction
+## Philosophy
 
-The `ChatAgent()` class is a cornerstone of CAMEL 🐫. We will first start with the single agent setting, where the agent can interact with users, process and store messages, and utilize external tools to generate responses and accomplish tasks.
+The `ChatAgent()` class is a cornerstone of CAMEL 🐫. We consider the agent as an autonomous entity that can act, learn, communicate, manipulate the environment, and accomplish goals in a fairly sophisticated way.
+
+In our current implementation, we consider agents with the following key features:
+- **Goal**: along with the role specification, this sets the initial state of an agent, guiding the agent to take actions during the sequential interaction.
+- **Memory**: in-context memory and external memory which allows the agent to infer and learn in a more grounded approach.
+- **Tools**: a set of functions that our agents can utilize to interact with the external world; essentially this gives embodiments to our agents.
+- (WIP) **Reasoning Ability**: since any goal can be formalized as the outcome of maximizing cumulative rewards, we will equip our agents with policy which they could follow to achieve goals.
+
+<!-- We will first start with the single agent setting, where the agent can interact with users, process and store messages, and utilize external tools to generate responses and accomplish tasks. -->
 
 ## Quick Start
 Let's first play with a `ChatAgent` instance by simply initialize it with a system message and interact with user messages.
@@ -20,24 +28,24 @@ Let's first play with a `ChatAgent` instance by simply initialize it with a syst
     from camel.agents import ChatAgent
     ```
 
-1. Create a system message, which defines its default role and behaviors.
+1. Create a system message to define agent's default role and behaviors.
     ```python
     sys_msg = bm.make_assistant_message(
-        role_name='system',
-        content='you are a helpful assistant.')
+        role_name='stone',
+        content='you are a curious stone wondering about the universe.')
     ```
-2. Initialize the agent as simply as providing the system message.
+2. Initialize the agent 🐫.
     ```python
     agent = ChatAgent(
         system_message=sys_msg,
-        message_window_size=10,    # [Optional] Num. of prior messages to store
+        message_window_size=10,    # [Optional] the length for chat memory
         )
     ```
-3. Now you can interact with the agent using the `.step()` method.
+3. Now you can interact with the agent 🐫 using the `.step()` method.
     ```python
     # Define a user message
     usr_msg = bm.make_user_message(
-        role_name='claude shannon',
+        role_name='prof. claude shannon',
         content='dear, what is information in your mind?')
 
     # Sending the message to the agent
@@ -47,21 +55,12 @@ Let's first play with a `ChatAgent` instance by simply initialize it with a syst
     print(response.msgs[0].content)
     >>> information is the resolution of uncertainty.
     ```
+🐫 Woohoo, your first agent is ready to play with you!
 
-## [Optional] Advanced Features
 
-### Some Useful Methods
-Setting the agent to its initial state:
-```python
-agent.reset()
-```
-Set the output language for the agent. (Notice that this method is achieved by appending language choice instruction to the system message; you may reinforce through additional messages for better intruction following.)
-```python
-agent.set_output_language('french')
-```
-The `ChatAgent` class also offers several advanced initialization options, including `model_type`, `model_config`, `memory`, `message_window_size`, `token_limit`, `output_language`, `function_list`, and `response_terminators`. Check [`chat_agent.py`](https://github.com/camel-ai/camel/blob/master/camel/agents/chat_agent.py) for detailed usage guidance.
+## Advanced Features
 
-### Function Calling
+### Tool Usage
 ```python
 # Import the necessary functions
 from camel.functions import MATH_FUNCS, SEARCH_FUNCS
@@ -77,15 +76,17 @@ agent.is_function_calling_enabled()
 >>> True
 ```
 
-### Playing with the Agent's Memory
-By default our agent is initialized with `ChatHistoryMemory`. Assume that you have followed the setup in [Quick Start](#quick-start). Let's first check what is inside its brain.
+### Memory
+By default our agent is initialized with `ChatHistoryMemory`, allowing agents to do in-context learning, though restricted by the finite window length.
+
+Assume that you have followed the setup in [Quick Start](#quick-start). Let's first check what is inside its brain.
 ```python
 agent.memory.get_context()
 >>> ([{'role': 'system', 'content': 'you are a helpful assistant.'},
       {'role': 'user', 'content': 'dear, what is information in your mind?'}],
       30)
 ```
-By default, we store only the user messages. You may update the agent's memory with any externally provided message in the format of `BaseMessage`; for example, using the agent's own response:
+By default, only the user messages are saved. You may update/alter the agent's memory with any externally provided message in the format of `BaseMessage`; for example, using the agent's own response:
 ```python
 # Update the memory
 agent.record_message(response.msgs[0])
@@ -98,37 +99,22 @@ agent.memory.get_context()
       {'role': 'assistant', 'content': 'information is the resolution of uncertainty.'}
       44)
 ```
+You can connect the agent with external database (as long-term memory) in which they can access and retrieve at each step. Please refer to our [cookbook]() for details.
 
-
-
-### Using Open-Source Models
-(This section echos our instruction in the setup chapter. We put it here for completeness of the content.)
-
-The high-level idea is to deploy a server with the local model in the backend and use it as a local drop-in replacement for the API. We here use [FastChat](https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md) as an example.
-
-0. Install the FastChat package with the following command, or see [here](https://github.com/lm-sys/FastChat/tree/main#install) for other options.
-    ```bash
-    pip3 install "fschat[model_worker,webui]"
-    ```
-
-1. Starting the FastChat server in the backend.
+### Other Useful Methods
+- Setting the agent to its initial state.
     ```python
-    # Launch the fastchat controller
-    python -m fastchat.serve.controller
-
-    # Launch the model worker
-    python -m fastchat.serve.model_worker \
-        --model-path meta-llama/Llama-2-7b-chat-hf  # a local folder or HuggingFace repo Name
-
-    # Launch the API server
-    python -m fastchat.serve.openai_api_server \
-        --host localhost \
-        --port 8000
+    agent.reset()
     ```
-
-
-2. Initialize the agent.
+- Set the output language for the agent.
     ```python
+    agent.set_output_language('french')
+    ```
+- Using open-source models.
+    ```python
+    # Please refer to our setup chapter for details on backend settings.
+    ...
+
     # Import the necessary classes
     from camel.configs import ChatGPTConfig, OpenSourceConfig
     from camel.types import ModelType
@@ -139,15 +125,14 @@ The high-level idea is to deploy a server with the local model in the backend an
 
         model_config=OpenSourceConfig(
             model_path='meta-llama/Llama-2-7b-chat-hf',  # a local folder or HuggingFace repo Name
-            server_url='http://localhost:8000/v1',       # The url with the set port number
-        ),
+            server_url='http://localhost:8000/v1'))       # The url with the set port number
 
-        token_limit=2046,                                # [Optional] Choose the ideal limit
-    )
-
-    # Now your agent is ready to play
+    # Set the agent
     agent = ChatAgent(sys_msg, **agent_kwargs)
     ```
 
-### Remarks
-Awesome. Now you have made your first step in creating a single agent 🐫. In the next chapter, we will explore the creation of different types agents along with the role playing features. Stay tuned 🦖🐆🐘🦒🦘🦕!
+The `ChatAgent` class offers several useful initialization options, including `model_type`, `model_config`, `memory`, `message_window_size`, `token_limit`, `output_language`, `function_list`, and `response_terminators`. Check [`chat_agent.py`](https://github.com/camel-ai/camel/blob/master/camel/agents/chat_agent.py) for detailed usage guidance.
+
+
+## Remarks
+Awesome! Now you have made your first step in creating a single agent. In the next chapter, we will explore the creation of different types agents along with the role playing features. Stay tuned 🦖🐆🐘🦒🦘🦕.

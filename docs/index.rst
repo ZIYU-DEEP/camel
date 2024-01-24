@@ -13,7 +13,7 @@ Welcome to CAMEL's documentation!
 
 .. toctree::
    :maxdepth: 1
-   :caption: Get Started:
+   :caption: Get Started
    :name: getting_started
 
    get_started/setup.md
