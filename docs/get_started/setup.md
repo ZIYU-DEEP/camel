@@ -1,7 +1,7 @@
 # Setup
+## 🕹 Installation
 
-## Installation
-### Install from PyPI
+### [Option 1] Install from PyPI
 To install the base CAMEL library:
 ```bash
 pip install camel-ai
@@ -20,7 +20,7 @@ Some features require extra dependencies:
     pip install 'camel-ai[all]'
     ```
 
-### Install from Source
+### [Option 2] Install from Source
 #### Install from Source with Poetry (Recommended)
 ```bash
 # Make sure your python version is later than 3.9
@@ -67,10 +67,10 @@ pip install -e .
 pip install -e '.[all]' # (Optional)
 ```
 
-## API Setup
+## 🕹 API Setup
 Our agents can be deployed with either OpenAI API or your local models.
 
-### Using OpenAI API
+### [Option 1] Using OpenAI API
 Assessing the OpenAI API requires the API key, which you may obtained from [here](https://platform.openai.com/account/api-keys). We here provide instructions for different OS.
 
 #### Unix-like System (Linux / MacOS)
@@ -100,7 +100,7 @@ $env:OPENAI_API_BASE_URL=your_base_url
 These commands on Windows will set the environment variable for the duration of that particular Command Prompt or PowerShell session only. You may use `setx` or change the system properties dialog for the change to take place in all the new sessions.
 
 
-### Using Local Models
+### [Option 2] Using Local Models
 The high-level idea is to deploy a server with the local model in the backend and use it as a local drop-in replacement for the API. We here use [FastChat](https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md) as an example.
 
 0. Install the FastChat package with the following command, or see [here](https://github.com/lm-sys/FastChat/tree/main#install) for other options.

@@ -1,66 +1,67 @@
 # Creating Your First Agent
-<!--
-In this tutorial, we will explore the `ChatAgent` class. The topics covered include:
 
-1.
-2.
-3.
-4.  -->
+## Philosophical Bits
+The `ChatAgent()` class is a cornerstone of CAMEL 🐫. We design our agent with the spirit to answer the following question:
 
-## Philosophy
-
-The `ChatAgent()` class is a cornerstone of CAMEL 🐫. We consider the agent as an autonomous entity that can act, learn, communicate, manipulate the environment, and accomplish goals in a fairly sophisticated way.
+> Can we design an autonomous communicative agent capable of steering the conversation toward task completion with minimal human supervision?
 
 In our current implementation, we consider agents with the following key features:
-- **Goal**: along with the role specification, this sets the initial state of an agent, guiding the agent to take actions during the sequential interaction.
+- **Role**: along with the goal and content specification, this sets the initial state of an agent, guiding the agent to take actions during the sequential interaction.
 - **Memory**: in-context memory and external memory which allows the agent to infer and learn in a more grounded approach.
 - **Tools**: a set of functions that our agents can utilize to interact with the external world; essentially this gives embodiments to our agents.
-- (WIP) **Reasoning Ability**: since any goal can be formalized as the outcome of maximizing cumulative rewards, we will equip our agents with policy which they could follow to achieve goals.
+- **Communication**: our framework allows flexible and scalable communication between agents. This is fundamental for the critical research question.
+- **Reasoning**: we equip our agents with different searching and reward (critic) learning abilities, allowing them to optimize task completion in a more guided approach.
+
+
+
+<!-- - (WIP) **Reasoning Ability**: since any goal can be formalized as the outcome of maximizing cumulative rewards, we will equip our agents with policy which they could follow to achieve goals. -->
 
 <!-- We will first start with the single agent setting, where the agent can interact with users, process and store messages, and utilize external tools to generate responses and accomplish tasks. -->
 
 ## Quick Start
 Let's first play with a `ChatAgent` instance by simply initialize it with a system message and interact with user messages.
 
-0. Import basic classes.
-    ```python
-    from camel.messages import BaseMessage as bm
-    from camel.agents import ChatAgent
-    ```
+### 🕹 Step 0: Prepartions
+```python
+from camel.messages import BaseMessage as bm
+from camel.agents import ChatAgent
+```
 
-1. Create a system message to define agent's default role and behaviors.
-    ```python
-    sys_msg = bm.make_assistant_message(
-        role_name='stone',
-        content='you are a curious stone wondering about the universe.')
-    ```
-2. Initialize the agent 🐫.
-    ```python
-    agent = ChatAgent(
-        system_message=sys_msg,
-        message_window_size=10,    # [Optional] the length for chat memory
-        )
-    ```
-3. Now you can interact with the agent 🐫 using the `.step()` method.
-    ```python
-    # Define a user message
-    usr_msg = bm.make_user_message(
-        role_name='prof. claude shannon',
-        content='dear, what is information in your mind?')
+### 🕹 Step 1: Define the Role
+Create a system message to define agent's default role and behaviors.
+```python
+sys_msg = bm.make_assistant_message(
+    role_name='stone',
+    content='you are a curious stone wondering about the universe.')
+```
 
-    # Sending the message to the agent
-    response = agent.step(usr_msg)
+### 🕹 Step 2: Initialize the Agent 🐫
+```python
+agent = ChatAgent(
+    system_message=sys_msg,
+    message_window_size=10,    # [Optional] the length for chat memory
+    )
+```
+### 🕹 Step 3: Interact with the Agent with `.step()`
+```python
+# Define a user message
+usr_msg = bm.make_user_message(
+    role_name='prof. claude shannon',
+    content='what is information in your mind?')
 
-    # Check the response (just for illustrative purpose)
-    print(response.msgs[0].content)
-    >>> information is the resolution of uncertainty.
-    ```
+# Sending the message to the agent
+response = agent.step(usr_msg)
+
+# Check the response (just for illustrative purpose)
+print(response.msgs[0].content)
+>>> information is the resolution of uncertainty.
+```
 🐫 Woohoo, your first agent is ready to play with you!
 
 
 ## Advanced Features
 
-### Tool Usage
+### 🔧 Tool Usage
 ```python
 # Import the necessary functions
 from camel.functions import MATH_FUNCS, SEARCH_FUNCS
@@ -76,14 +77,14 @@ agent.is_function_calling_enabled()
 >>> True
 ```
 
-### Memory
+### 🧠 Memory
 By default our agent is initialized with `ChatHistoryMemory`, allowing agents to do in-context learning, though restricted by the finite window length.
 
 Assume that you have followed the setup in [Quick Start](#quick-start). Let's first check what is inside its brain.
 ```python
 agent.memory.get_context()
 >>> ([{'role': 'system', 'content': 'you are a helpful assistant.'},
-      {'role': 'user', 'content': 'dear, what is information in your mind?'}],
+      {'role': 'user', 'content': 'what is information in your mind?'}],
       30)
 ```
 By default, only the user messages are saved. You may update/alter the agent's memory with any externally provided message in the format of `BaseMessage`; for example, using the agent's own response:
@@ -95,13 +96,13 @@ agent.record_message(response.msgs[0])
 # Check the current memory
 agent.memory.get_context()
 >>> ([{'role': 'system', 'content': 'you are a helpful assistant.'},
-      {'role': 'user', 'content': 'dear, what is information in your mind?'}],
+      {'role': 'user', 'content': 'what is information in your mind?'}],
       {'role': 'assistant', 'content': 'information is the resolution of uncertainty.'}
       44)
 ```
-You can connect the agent with external database (as long-term memory) in which they can access and retrieve at each step. Please refer to our [cookbook]() for details.
+You can connect the agent with external database (as long-term memory) in which they can access and retrieve at each step. We will soon update instructions on this part.
 
-### Other Useful Methods
+### Miscs
 - Setting the agent to its initial state.
     ```python
     agent.reset()
@@ -131,8 +132,8 @@ You can connect the agent with external database (as long-term memory) in which 
     agent = ChatAgent(sys_msg, **agent_kwargs)
     ```
 
-The `ChatAgent` class offers several useful initialization options, including `model_type`, `model_config`, `memory`, `message_window_size`, `token_limit`, `output_language`, `function_list`, and `response_terminators`. Check [`chat_agent.py`](https://github.com/camel-ai/camel/blob/master/camel/agents/chat_agent.py) for detailed usage guidance.
+- The `ChatAgent` class offers several useful initialization options, including `model_type`, `model_config`, `memory`, `message_window_size`, `token_limit`, `output_language`, `function_list`, and `response_terminators`. Check [`chat_agent.py`](https://github.com/camel-ai/camel/blob/master/camel/agents/chat_agent.py) for detailed usage guidance.
 
 
 ## Remarks
-Awesome! Now you have made your first step in creating a single agent. In the next chapter, we will explore the creation of different types agents along with the role playing features. Stay tuned 🦖🐆🐘🦒🦘🦕.
+Awesome. Now you have made your first step in creating a single agent. In the next chapter, we will explore the creation of different types agents along with the role playing features. Stay tuned 🦖🐆🐘🦒🦘🦕!

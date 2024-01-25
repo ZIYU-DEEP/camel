@@ -18,6 +18,7 @@ Welcome to CAMEL's documentation!
 
    get_started/setup.md
    get_started/single_agent.md
+   get_started/role_playing.md
    get_started/text_prompt.md
    get_started/code_prompt.md
    get_started/messages.md
